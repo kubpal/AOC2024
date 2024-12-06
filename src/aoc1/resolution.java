@@ -2,6 +2,7 @@ package aoc1;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collections;
 
 public class resolution {
     static ArrayList<Integer> first = new ArrayList<>();
@@ -13,8 +14,8 @@ public class resolution {
         segregate(first);
         segregate(second);
 
-        System.out.println(calculateDistance(first, second));
-
+        System.out.println("First part:" + calculateDistance(first, second));
+        System.out.println("Second part:" + calculateSimilarityScore(first, second));
     }
 
     public static void readData(File data) {
@@ -49,5 +50,18 @@ public class resolution {
             System.out.println("Data reading failed!");
             return 0;
         }
+    }
+
+    public static int calculateSimilarityScore (ArrayList<Integer> first, ArrayList<Integer> second){
+        int similarityScore = 0;
+        for (Integer i : first) {
+            int temporaryScore = i * calculateOccurrences(i,second);
+            similarityScore += temporaryScore;
+        }
+        return similarityScore;
+    }
+
+    public static int calculateOccurrences(int i, ArrayList<Integer> list){
+        return Collections.frequency(list, i);
     }
 }
