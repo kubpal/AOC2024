@@ -10,11 +10,13 @@ public class resolution5 {
     static File data = new File("src/aoc5/data");
     static Map<Integer, Set<Integer>> rules = new HashMap<>();
     static ArrayList<ArrayList<Integer>> updates = new ArrayList<>();
+    static ArrayList<Integer> incorrectUpdates = new ArrayList<>();
 
 
     public static void main(String[] args) {
         readData(data);
         System.out.println("First part result: " + sumCorrectUpdatesMiddlePages());
+        System.out.println("Second part result: " + sumFixedUpdates());
     }
 
     public static void readData(File data) {
@@ -55,6 +57,8 @@ public class resolution5 {
         for (ArrayList<Integer> update : updates) {
             if (checkOneUpdate(update)) {
                 counter += update.get((update.size() - 1) / 2);
+            } else {
+                incorrectUpdates.add(updates.indexOf(update));
             }
         }
         return counter;
@@ -78,5 +82,39 @@ public class resolution5 {
             }
         }
         return correct;
+    }
+
+    public static int sumFixedUpdates() {
+        int sum = 0;
+        for (Integer incorrectUpdateIndex : incorrectUpdates) {
+
+            while (!checkOneUpdate(updates.get(incorrectUpdateIndex))) {
+                fixUpdate(incorrectUpdateIndex);
+            }
+            ArrayList<Integer> update = updates.get(incorrectUpdateIndex);
+            sum += update.get((update.size() - 1) / 2);
+
+        }
+        return sum;
+    }
+
+    public static void fixUpdate(int index) {
+        ArrayList<Integer> update = updates.get(index);
+        for (int i = 1; i < update.size(); i++) {
+            int pageNumber = update.get(i);
+            if (rules.containsKey(pageNumber)) {
+                Set<Integer> specificPageRules = rules.get(pageNumber);
+                for (Integer pageRule : specificPageRules) {
+                    if (update.contains(pageRule)) {
+                        int indexOfRulePage = update.indexOf(pageRule);
+                        if (indexOfRulePage < i) {
+                            updates.get(index).remove(indexOfRulePage);
+                            updates.get(index).add(i, pageRule);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
     }
 }
